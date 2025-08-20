@@ -78,9 +78,9 @@ def to_new_calendar(g: date) -> dict:
     公曆 → 新曆資訊：
       - display_year: 顯示用年份（不會出現 0 年）
       - n_year: 內部整數年號（可為 <=0）
-      - n_month, n_day: 1..12 月各 30 天；年末日以 n_month=0, n_day=1..5/6
+      - n_month, n_day: 1..12 月各 30 天；祭典以 n_month=0, n_day=1..5/6
       - doy: 年內序日（1..360；年末 361..365/366）
-      - is_ep: 是否年末日
+      - is_ep: 是否祭典
     """
     ny, S, Sn = locate_new_year(g)
     doy = (g - S).days + 1
@@ -124,7 +124,7 @@ def to_gregorian(n_year: int, n_month: int, n_day: int) -> date:
     """
     新曆 → 公曆；僅支援 n_year >= 1。
     - 1..12 月各 30 天
-    - 年末日：n_month = 0, n_day = 1..5/6（依該年長度而定）
+    - 祭典：n_month = 0, n_day = 1..5/6（依該年長度而定）
     """
     S = start_of_year(n_year)
     Sn = next_start(S)
@@ -133,11 +133,11 @@ def to_gregorian(n_year: int, n_month: int, n_day: int) -> date:
 
     if n_month == 0:
         if not (1 <= n_day <= max_ep):
-            raise ValueError(f"該年只有 {max_ep} 個年末日")
+            raise ValueError(f"該年只有 {max_ep} 個祭典")
         offset = 360 + (n_day - 1)
     else:
         if not (1 <= n_month <= 12):
-            raise ValueError("月份需介於 1..12（年末日請用月份 0）")
+            raise ValueError("月份需介於 1..12（祭典請用月份 0）")
         if not (1 <= n_day <= 30):
             raise ValueError("每個月份僅有 30 天")
         offset = (n_month - 1) * 30 + (n_day - 1)
@@ -167,7 +167,7 @@ def build_year_table(n_year: int) -> pd.DataFrame:
             "新曆月": label_m,
             "新曆日": n_day,
             "新曆序日": doy,
-            "是否年末日": is_ep,
+            "是否祭典": is_ep,
             "公曆日期": g.isoformat(),
         })
     return pd.DataFrame(rows)
@@ -185,9 +185,9 @@ def expect_for_date(d: date) -> str:
     if d.month == 3 and d.day == 1:
         return "應為 新曆 7/12"
     if d.month == 8 and d.day == 17:
-        return "應為 年末日 第1天"
+        return "應為 祭典 第1天"
     if d.month == 8 and d.day == 22:
-        return "若下一年閏：年末日第6天；否則：新曆 1/1"
+        return "若下一年閏：祭典第6天；否則：新曆 1/1"
     if d.month == 8 and d.day == 23:
         return "若下一年閏：新曆 1/1；否則：新曆 1/2"
     if d.month == 2 and d.day in (28, 29):
@@ -207,7 +207,7 @@ def check_rule(d: date, out: dict) -> bool:
     def is_new(m, n):  # 一般月份
         return (out["n_month"] == m and out["n_day"] == n and not out["is_ep"])
 
-    def is_ep(n):      # 年末日第 n 天
+    def is_ep(n):      # 祭典第 n 天
         return (out["is_ep"] and out["n_day"] == n)
 
     if d.month == 3 and d.day == 1:
@@ -240,7 +240,7 @@ with st.expander("📘 本版規則", expanded=False):
     st.markdown("""
 - **新曆紀元**：1 年 1/1 = 公曆 **2023-08-23**；不使用「0 年」標示，紀元之前的日期顯示為「**新曆（前一年 / 前 X 年）**」。
 - **年界線**（關鍵修正）：**公曆年 Y 的新曆 1/1 為 Y-08-23 若 (Y+1) 閏，否則為 Y-08-22**。
-- **固定對齊**：公曆 **8/17 永遠是年末日第 1 天**；**3/1 永遠對應新曆 7/12**。
+- **固定對齊**：公曆 **8/17 永遠是祭典第 1 天**；**3/1 永遠對應新曆 7/12**。
     """)
 
 tab1, tab2, tab3 = st.tabs(["🔁 公曆 → 新曆", "🔁 新曆 → 公曆", "📚 批次驗證 / 下載"])
@@ -248,13 +248,13 @@ tab1, tab2, tab3 = st.tabs(["🔁 公曆 → 新曆", "🔁 新曆 → 公曆", 
 # ---- 公曆 → 新曆 ----
 with tab1:
     st.subheader("公曆 → 新曆")
-    g = st.date_input("選擇公曆日期", value=date(2023, 8, 23), format="YYYY-MM-DD")
+    g = st.date_input("選擇公曆日期", value=date(2023, 8, 23), format="YYYY-MM-DD", min_value=date(1, 1, 1), max_value=date(9999, 12, 31))
 
     def fmt_result(gd: date) -> str:
         out = to_new_calendar(gd)
         ytxt = out["display_year"]
         if out["is_ep"]:
-            return f"{gd.isoformat()} → 新曆（{ytxt}）年末日 第 {out['n_day']} 天（序日 {out['doy']}）"
+            return f"{gd.isoformat()} → 新曆（{ytxt}）祭典 第 {out['n_day']} 天（序日 {out['doy']}）"
         else:
             if out["n_year"] >= 1:
                 return f"{gd.isoformat()} → 新曆 {ytxt} {out['n_month']}/{out['n_day']}（序日 {out['doy']}）"
@@ -286,7 +286,7 @@ with tab2:
     with col1:
         ny = st.number_input("新曆年（≥1）", value=1, min_value=1, step=1, format="%d")
     with col2:
-        mode = st.radio("輸入模式", ["一般月份（1..12）", "年末日（月份 0）"], horizontal=True)
+        mode = st.radio("輸入模式", ["一般月份（1..12）", "祭典（月份 0）"], horizontal=True)
         if mode == "一般月份（1..12）":
             nm = st.number_input("新曆月", min_value=1, max_value=12, value=1, step=1)
             nd = st.number_input("新曆日", min_value=1, max_value=30, value=1, step=1)
@@ -295,7 +295,7 @@ with tab2:
             Sn = next_start(S)
             max_ep = (Sn - S).days - 360
             nm = 0
-            nd = st.number_input(f"年末日序（1..{max_ep}）", min_value=1, max_value=max_ep, value=1, step=1)
+            nd = st.number_input(f"祭典序（1..{max_ep}）", min_value=1, max_value=max_ep, value=1, step=1)
 
     if st.button("轉換為公曆", type="primary", key="to_g"):
         try:
@@ -323,7 +323,7 @@ with tab3:
             for d in dates:
                 out = to_new_calendar(d)
                 # 實際
-                actual = f"年末日 第{out['n_day']}天" if out["is_ep"] else f"{out['n_month']}/{out['n_day']}"
+                actual = f"祭典 第{out['n_day']}天" if out["is_ep"] else f"{out['n_month']}/{out['n_day']}"
                 # 期望 / 檢查
                 expected = expect_for_date(d)
                 ok = check_rule(d, out)
