@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ignire-calendar"
+version = "0.2.0"
+description = "A 12 x 30-day calendar converter with year-end festival days"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENCE" }
+authors = [{ name = "Ignire Bar" }]
+dependencies = [
+  "pandas>=2.0,<3",
+  "streamlit>=1.32,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4,<9",
+  "ruff>=0.4,<1",
+]
+
+[tool.setuptools.packages.find]
+include = ["ignire_calendar*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]

@@ -1,10 +1,12 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
-# Ensure conda is initialized before trying to activate the environment
-source ~/miniconda3/etc/profile.d/conda.sh
+set -euo pipefail
+cd "${0:A:h}"
 
-# Activate the conda environment
-conda activate calendar-app
+if ! python -c "import streamlit" >/dev/null 2>&1; then
+  print -u2 "Streamlit is not installed in the active Python environment."
+  print -u2 "Run: conda env create -f environment.yml && conda activate calendar-app"
+  exit 1
+fi
 
-# Run the calendar script
-streamlit run calendar_app.py
+exec python -m streamlit run calendar_app.py "$@"

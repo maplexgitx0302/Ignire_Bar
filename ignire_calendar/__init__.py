@@ -1,0 +1,45 @@
+"""Public API for the Ignire calendar conversion engine."""
+
+from .calendar import (
+    EPOCH_START,
+    MAX_GREGORIAN_DATE,
+    MAX_NEW_YEAR,
+    MIN_GREGORIAN_DATE,
+    MIN_NEW_YEAR,
+    CalendarRangeError,
+    CalendarYear,
+    NewCalendarDate,
+    build_year_rows,
+    get_calendar_year,
+    is_leap_year,
+    iter_calendar_year,
+    new_year_start_for_gregorian_year,
+    start_of_year,
+    to_gregorian,
+    to_new_calendar,
+    year_label,
+)
+from .verification import build_verification_rows, expected_rule, matches_rule
+
+__all__ = [
+    "EPOCH_START",
+    "MAX_GREGORIAN_DATE",
+    "MAX_NEW_YEAR",
+    "MIN_GREGORIAN_DATE",
+    "MIN_NEW_YEAR",
+    "CalendarRangeError",
+    "CalendarYear",
+    "NewCalendarDate",
+    "build_year_rows",
+    "build_verification_rows",
+    "expected_rule",
+    "get_calendar_year",
+    "is_leap_year",
+    "iter_calendar_year",
+    "matches_rule",
+    "new_year_start_for_gregorian_year",
+    "start_of_year",
+    "to_gregorian",
+    "to_new_calendar",
+    "year_label",
+]
