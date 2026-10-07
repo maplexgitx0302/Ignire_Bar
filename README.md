@@ -43,7 +43,7 @@ docs/                      GitHub Pages 網站（純 HTML/CSS/JS，不需建置�
                            產生的 Scriptable 腳本（內嵌曆法引擎）
 scripts/
   scriptable-widget.js     Scriptable widget 原始碼
-  build-scriptable.mjs     把曆法引擎嵌入 widget，產生上面的腳本
+  build.mjs                把曆法引擎嵌入 widget，並替網頁資源加上版本戳記
 test/                      Node 內建測試
 doctrine/                  教義原文存檔
 design/hinokarasu.JPEG     標誌原檔
@@ -81,6 +81,13 @@ npm run serve     # 在 http://localhost:8000 預覽網頁（需要 Python 3）
 ## 部署
 
 GitHub Pages 設定為從 `main` 分支的 `/docs` 資料夾發布，push 後約一分鐘自動更新。
+
+GitHub Pages 會讓瀏覽器快取每個檔案 10 分鐘（`cache-control: max-age=600`），且無法調整。因此：
+
+- `npm run build` 會在 HTML 中的每個資源網址加上內容雜湊（如 `style.css?v=…`），確保新頁面一定搭配新的 CSS、JS 與圖片。
+- `docs/update.js` 在開啟頁面或切回頁面時檢查 `version.json`；若網站已更新，會自動載入新版一次。
+
+修改 `docs/` 內任何檔案後，請先執行 `npm run build` 再 commit（`npm test` 會檢查）。
 
 ## 授權
 

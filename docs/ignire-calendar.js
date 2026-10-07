@@ -16,7 +16,7 @@
  * Ignire dates use month 1-12 for regular days and month 0 for festival days.
  *
  * This file runs unchanged in browsers, in Node (tests), and inside the
- * Scriptable widget script, which embeds a copy of it (see scripts/build-scriptable.mjs).
+ * Scriptable widget script, which embeds a copy of it (see scripts/build.mjs).
  */
 const IgnireCalendar = (() => {
   "use strict";

@@ -7,7 +7,7 @@
 //
 // 火焰是淨化，火焰是祝福，火焰是重生。
 //
-// Generated from scripts/scriptable-widget.js by scripts/build-scriptable.mjs.
+// Generated from scripts/scriptable-widget.js by scripts/build.mjs.
 // Edit those sources, not docs/scriptable/IgnireCalendar.js.
 
 /*
@@ -28,7 +28,7 @@
  * Ignire dates use month 1-12 for regular days and month 0 for festival days.
  *
  * This file runs unchanged in browsers, in Node (tests), and inside the
- * Scriptable widget script, which embeds a copy of it (see scripts/build-scriptable.mjs).
+ * Scriptable widget script, which embeds a copy of it (see scripts/build.mjs).
  */
 const IgnireCalendar = (() => {
   "use strict";

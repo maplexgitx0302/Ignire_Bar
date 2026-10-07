@@ -51,8 +51,13 @@ change together with a confirmed rule change.
 - The masthead is always a soot band (both themes) with icon tabs; the current
   page is marked with `aria-current="page"`, which draws the flame indicator.
 - `scripts/scriptable-widget.js`: Scriptable widget source.
-- `scripts/build-scriptable.mjs`: embeds the engine into the widget, producing
-  `docs/scriptable/IgnireCalendar.js`. Never edit the generated file by hand.
+- `scripts/build.mjs`: embeds the engine into the widget, producing
+  `docs/scriptable/IgnireCalendar.js` and `docs/scriptable/source.js`, and
+  stamps cache-busting `?v=<hash>` on every local asset in the HTML pages plus a
+  site version (`<meta name="site-version">`, `docs/version.json`). Never edit
+  generated files or stamps by hand; run `npm run build`.
+- `docs/update.js`: loads a new deploy despite GitHub Pages' 10-minute cache by
+  comparing the page's site version with `version.json`.
 - `test/`: Node built-in tests (`node --test`).
 
 Do not put conversion logic in `app.js` or the widget; add it to the engine and

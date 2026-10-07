@@ -7,7 +7,7 @@
 //
 // 火焰是淨化，火焰是祝福，火焰是重生。
 //
-// Generated from scripts/scriptable-widget.js by scripts/build-scriptable.mjs.
+// Generated from scripts/scriptable-widget.js by scripts/build.mjs.
 // Edit those sources, not docs/scriptable/IgnireCalendar.js.
 
 /*@@IGNIRE_CORE@@*/

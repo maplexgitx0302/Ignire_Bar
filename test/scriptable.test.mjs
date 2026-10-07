@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import vm from "node:vm";
 
-import { buildScriptable, buildSourceModule, WEB_URL } from "../scripts/build-scriptable.mjs";
+import { buildScriptable, buildSourceModule, WEB_URL } from "../scripts/build.mjs";
 
 class MockElement {
   constructor(kind, text) {
