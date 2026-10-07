@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import vm from "node:vm";
 
-import { buildScriptable, WEB_URL } from "../scripts/build-scriptable.mjs";
+import { buildScriptable, buildSourceModule, WEB_URL } from "../scripts/build-scriptable.mjs";
 
 class MockElement {
   constructor(kind, text) {
@@ -127,4 +127,10 @@ test("refreshes just after the next local midnight", async () => {
     [refresh.getFullYear(), refresh.getMonth(), refresh.getDate(), refresh.getHours()],
     [2026, 9, 8, 0]
   );
+});
+
+test("website copy-button source matches the Scriptable script", () => {
+  const context = vm.createContext({ window: {} });
+  vm.runInContext(buildSourceModule(), context);
+  assert.equal(context.window.IgnireScriptableSource, buildScriptable());
 });

@@ -269,16 +269,14 @@
   }
 
   // ---------- Scriptable script copy ----------
-  let scriptText = null;
-  fetch("scriptable/IgnireCalendar.js")
-    .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
-    .then((text) => {
-      scriptText = text;
-      $("copy-script").disabled = false;
-    })
-    .catch(() => {
-      $("copy-status").textContent = "無法載入腳本，請改用「下載腳本」。";
-    });
+  // scriptable/source.js defines the script text, so copying also works when the
+  // page is opened from disk (file://), where fetch() is blocked.
+  const scriptText = window.IgnireScriptableSource;
+  if (scriptText) {
+    $("copy-script").disabled = false;
+  } else {
+    $("copy-status").textContent = "無法載入腳本，請改用「下載腳本」。";
+  }
 
   async function copyScript() {
     const status = $("copy-status");
