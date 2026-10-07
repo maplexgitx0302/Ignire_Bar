@@ -3,8 +3,9 @@
 ## Purpose
 
 Ignire Calendar converts between the proleptic Gregorian calendar and a custom
-calendar of twelve 30-day months plus five or six year-end festival days. The
-Streamlit UI is in Traditional Chinese.
+calendar of twelve 30-day months plus five or six year-end festival days. It is
+a static website (GitHub Pages, `docs/`) and a Scriptable iPhone widget. All
+user-facing text is Traditional Chinese.
 
 ## Non-negotiable calendar invariants
 
@@ -14,61 +15,40 @@ Streamlit UI is in Traditional Chinese.
 - Gregorian March 1 is always Ignire month 7, day 12.
 - Gregorian August 17 is always festival day 1.
 - Regular months are numbered 1–12 and contain exactly 30 days.
-- Festival dates use month `0` in the Python API and day 1–5 or 1–6.
+- Festival dates use month `0` in the API and day 1–5 or 1–6.
 - User-facing labels never call the year before year 1 “year 0”; they use
   `前一年`, `前2年`, and so on.
 
 If a requested change appears to contradict an invariant, confirm the calendar
-rule with the user before changing the engine.
+rule with the user before changing the engine. `PYTHON_ENGINE_SHA256` in
+`test/calendar.test.mjs` pins the output for every supported date; it must only
+change together with a confirmed rule change.
 
 ## Project map
 
-- `ignire_calendar/calendar.py`: pure, dependency-free domain logic.
-- `ignire_calendar/verification.py`: canonical alignment checks.
-- `ignire_calendar/app.py`: Streamlit presentation only.
-- `calendar_app.py`: stable Streamlit entry point.
-- `tests/`: unit, boundary, invariant, and round-trip tests.
-- `ios/`: standalone SwiftUI iPhone app and its WidgetKit extension.
-- `ios/ParityTool/`: macOS CLI that dumps every Swift conversion for parity tests.
+- `docs/ignire-calendar.js`: the only calendar engine. Classic script with no
+  dependencies; works in browsers, Node (`require`), and Scriptable. Uses integer
+  day numbers, never `Date`, for calendar arithmetic.
+- `docs/app.js`, `docs/index.html`, `docs/style.css`: website UI only.
+- `scripts/scriptable-widget.js`: Scriptable widget source.
+- `scripts/build-scriptable.mjs`: embeds the engine into the widget, producing
+  `docs/scriptable/IgnireCalendar.js`. Never edit the generated file by hand.
+- `test/`: Node built-in tests (`node --test`).
 
-Do not put conversion logic in Streamlit callbacks. Add it to the domain module,
-export public APIs from `ignire_calendar/__init__.py`, and test it directly.
-
-The iOS target deliberately has a matching pure Swift conversion engine in
-`ios/IgnireCalendar/IgnireCalendarCore.swift`; it is compiled into both the app
-and widget extension. Any calendar-rule change must be mirrored in both engines
-and tested on both sides; `IGNIRE_SWIFT_PARITY=1 pytest tests/test_swift_parity.py`
-proves the two engines agree on every supported date. The Swift engine uses
-integer day numbers, not `Foundation.Calendar`, for all calendar arithmetic.
+Do not put conversion logic in `app.js` or the widget; add it to the engine and
+test it directly.
 
 ## Development commands
 
 ```bash
-python -m pip install -e ".[dev]"
-ruff check .
-pytest
-./run.sh
-```
-
-Swift engine parity and iOS tests (full Xcode required):
-
-```bash
-IGNIRE_SWIFT_PARITY=1 pytest tests/test_swift_parity.py
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
-  -project ios/IgnireCalendar.xcodeproj -scheme IgnireCalendar \
-  -destination 'platform=iOS Simulator,name=iPhone 16' test
-```
-
-The standard-library-only fallback test command is:
-
-```bash
-python -m unittest discover -v
+npm run build   # regenerate docs/scriptable/IgnireCalendar.js
+npm test        # fails if the generated script is stale, then runs all tests
+npm run serve   # preview at http://localhost:8000
 ```
 
 ## Completion checklist
 
 - Preserve all calendar invariants and cover new behavior with tests.
-- Test both conversion directions and boundary/error behavior.
-- Run Ruff and the complete test suite when the development dependencies exist.
-- Keep local paths, secrets, generated CSV files, and caches out of version control.
+- Run `npm run build` after changing the engine or widget, then `npm test`.
+- Check the site at phone width (390px) and in light and dark mode.
 - Update `README.md` and this file when commands or architecture change.
