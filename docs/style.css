@@ -126,6 +126,14 @@ main,
   text-decoration: none;
 }
 
+/* The logo (design/hinokarasu.jpg) is a gold crow on black: show it as a round seal. */
+.logo {
+  border-radius: 50%;
+  border: 1.5px solid var(--soot-gold);
+  background: #000;
+  object-fit: cover;
+}
+
 .brand > span {
   display: grid;
   line-height: 1.15;
@@ -196,7 +204,7 @@ main {
   letter-spacing: 0.12em;
 }
 
-/* Today: always soot black with gold, like the emblem */
+/* Today: always soot black with gold, like the logo */
 .today {
   position: relative;
   overflow: hidden;
@@ -700,8 +708,10 @@ a:focus-visible {
 }
 
 .handbook-hero img {
-  width: min(180px, 50vw);
+  width: min(200px, 55vw);
   height: auto;
+  border-width: 2px;
+  box-shadow: 0 0 0 6px rgb(217 177 92 / 12%), 0 0 40px rgb(240 160 60 / 20%);
 }
 
 .handbook-hero h1 {

@@ -38,7 +38,7 @@ docs/                      GitHub Pages 網站（純 HTML/CSS/JS，不需建置�
   app.js                   網頁互動
   index.html, style.css    曆法網頁
   handbook.html            《火神信仰與祈禱手冊》網頁
-  emblem.svg               徽記：口銜燃燒植物、羽毛焦黑、唯尾端七彩的彩虹鳥
+  hinokarasu*.jpg          標誌（由 design/hinokarasu.jpg 裁切縮小）
   scriptable/IgnireCalendar.js
                            產生的 Scriptable 腳本（內嵌曆法引擎）
 scripts/
@@ -46,12 +46,14 @@ scripts/
   build-scriptable.mjs     把曆法引擎嵌入 widget，產生上面的腳本
 test/                      Node 內建測試
 doctrine/                  教義原文存檔
+design/hinokarasu.jpg      標誌原檔
 ```
 
 ## 設計與用字
 
 網頁與小工具的設計和用字以《火神信仰與祈禱手冊》為準：
 
+- **標誌**：`design/hinokarasu.jpg`，金色火焰構成的烏鴉，在網頁上以金框圓形呈現。
 - **配色**：焦黑（烏鴉的羽毛）與黃金（神像），火焰橘點綴；七彩只出現在線條末端，對應「唯有尾巴末端還保留著七彩的顏色」。
 - **用字**：使用「公元」而非「公曆」；以「日」計（每月 30 日、祭典第 1 日）；公元 8/17 稱「聖日」；每年第一天稱「首日」；祭典期間稱「火柱長燃」；祭典之日不計入曆法，因此不顯示「本年第幾日」。
 - **禱詞**：「火焰是淨化，火焰是祝福，火焰是重生。」

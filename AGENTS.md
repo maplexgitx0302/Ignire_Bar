@@ -41,7 +41,11 @@ change together with a confirmed rule change.
   dependencies; works in browsers, Node (`require`), and Scriptable. Uses integer
   day numbers, never `Date`, for calendar arithmetic.
 - `docs/app.js`, `docs/index.html`, `docs/style.css`: website UI only.
-- `docs/handbook.html`: the handbook page; `docs/emblem.svg`: the emblem.
+- `docs/handbook.html`: the handbook page.
+- `design/hinokarasu.jpg`: the user's original logo. `docs/hinokarasu.jpg`,
+  `docs/hinokarasu-160.jpg`, `docs/apple-touch-icon.png` and `docs/favicon.png`
+  are square crops of it (`sips -c 967 967`, then resized). Do not replace the
+  logo with a drawn one.
 - `scripts/scriptable-widget.js`: Scriptable widget source.
 - `scripts/build-scriptable.mjs`: embeds the engine into the widget, producing
   `docs/scriptable/IgnireCalendar.js`. Never edit the generated file by hand.
