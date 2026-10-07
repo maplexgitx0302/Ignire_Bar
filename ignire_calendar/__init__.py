@@ -17,9 +17,15 @@ from .calendar import (
     start_of_year,
     to_gregorian,
     to_new_calendar,
+    weekday_label,
     year_label,
 )
-from .verification import build_verification_rows, expected_rule, matches_rule
+from .verification import (
+    build_verification_rows,
+    expected_alignment,
+    expected_rule,
+    matches_rule,
+)
 
 __all__ = [
     "EPOCH_START",
@@ -32,6 +38,7 @@ __all__ = [
     "NewCalendarDate",
     "build_year_rows",
     "build_verification_rows",
+    "expected_alignment",
     "expected_rule",
     "get_calendar_year",
     "is_leap_year",
@@ -41,5 +48,6 @@ __all__ = [
     "start_of_year",
     "to_gregorian",
     "to_new_calendar",
+    "weekday_label",
     "year_label",
 ]

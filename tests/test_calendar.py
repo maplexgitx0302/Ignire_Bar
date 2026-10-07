@@ -147,6 +147,81 @@ class ConversionTests(unittest.TestCase):
         self.assertEqual(len(rows), 2000)
         self.assertTrue(all(row["結果"] == "✅" for row in rows))
 
+    def test_canonical_rules_hold_for_every_supported_gregorian_year(self) -> None:
+        rows = build_verification_rows(2, 9998)
+        failures = [row for row in rows if row["結果"] != "✅"]
+        self.assertEqual(failures, [])
+
+
+class ReferenceDateTests(unittest.TestCase):
+    """Hand-computed conversions, independent of the engine's formulas."""
+
+    CASES = (
+        # (Gregorian, Ignire year, month, day, day of year)
+        (date(2023, 8, 22), 0, 0, 6, 366),  # 前一年 ends with six festival days
+        (date(2023, 8, 23), 1, 1, 1, 1),  # epoch
+        (date(2023, 9, 21), 1, 1, 30, 30),
+        (date(2023, 9, 22), 1, 2, 1, 31),
+        (date(2024, 2, 29), 1, 7, 11, 191),
+        (date(2024, 3, 1), 1, 7, 12, 192),
+        (date(2024, 8, 16), 1, 12, 30, 360),
+        (date(2024, 8, 17), 1, 0, 1, 361),
+        (date(2024, 8, 21), 1, 0, 5, 365),  # 2025 is not leap: five festival days
+        (date(2024, 8, 22), 2, 1, 1, 1),
+        (date(2026, 10, 7), 4, 2, 17, 47),
+        (date(2027, 8, 22), 4, 0, 6, 366),
+        (date(2027, 8, 23), 5, 1, 1, 1),
+        (date(2099, 8, 22), 77, 1, 1, 1),  # 2100 is not a leap year
+        (date(2399, 8, 23), 377, 1, 1, 1),  # 2400 is a leap year
+    )
+
+    def test_reference_dates(self) -> None:
+        for gregorian_date, year, month, day, day_of_year in self.CASES:
+            with self.subTest(gregorian_date=gregorian_date):
+                result = to_new_calendar(gregorian_date)
+                self.assertEqual(
+                    (result.year, result.month, result.day, result.day_of_year),
+                    (year, month, day, day_of_year),
+                )
+                self.assertEqual(to_gregorian(year, month, day), gregorian_date)
+
+    def test_display_text(self) -> None:
+        self.assertEqual(to_new_calendar(date(2026, 10, 7)).display_date, "新曆 4 年 2/17")
+        self.assertEqual(
+            to_new_calendar(date(2023, 8, 22)).display_date, "新曆（前一年）祭典第 6 天"
+        )
+        self.assertEqual(to_new_calendar(date(2021, 9, 1)).display_date, "新曆（前2年）1/11")
+
+
+class IterativeOracleTests(unittest.TestCase):
+    """Compare the O(1) engine with a naive day-by-day walk of the calendar."""
+
+    def test_every_supported_day_matches_a_naive_walk(self) -> None:
+        def next_new_year(current: date) -> date:
+            year = current.year + 1
+            return date(year, 8, 23 if (year + 1) % 4 == 0 and (
+                (year + 1) % 100 != 0 or (year + 1) % 400 == 0
+            ) else 22)
+
+        start = MIN_GREGORIAN_DATE
+        year = MIN_NEW_YEAR
+        while year <= MAX_NEW_YEAR:
+            end = next_new_year(start)
+            length = (end - start).days
+            with self.subTest(year=year):
+                self.assertEqual(start_of_year(year), start)
+                self.assertEqual(get_calendar_year(year).length, length)
+                for day_of_year in (1, 30, 31, 360, 361, length):
+                    gregorian_date = start + timedelta(days=day_of_year - 1)
+                    if day_of_year <= 360:
+                        expected = (year, (day_of_year - 1) // 30 + 1, (day_of_year - 1) % 30 + 1)
+                    else:
+                        expected = (year, 0, day_of_year - 360)
+                    result = to_new_calendar(gregorian_date)
+                    self.assertEqual((result.year, result.month, result.day), expected)
+            start, year = end, year + 1
+        self.assertEqual(start - timedelta(days=1), MAX_GREGORIAN_DATE)
+
 
 if __name__ == "__main__":
     unittest.main()

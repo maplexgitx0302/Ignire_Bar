@@ -58,6 +58,15 @@ MIN_GREGORIAN_DATE = new_year_start_for_gregorian_year(1)
 MAX_GREGORIAN_DATE = new_year_start_for_gregorian_year(9999) - timedelta(days=1)
 
 
+_WEEKDAY_LABELS = ("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日")
+
+
+def weekday_label(gregorian_date: date) -> str:
+    """Return the Traditional Chinese weekday name of a Gregorian date."""
+
+    return _WEEKDAY_LABELS[gregorian_date.weekday()]
+
+
 def year_label(year: int) -> str:
     """Format an Ignire year without displaying a year zero."""
 
@@ -115,12 +124,9 @@ class NewCalendarDate:
     def display_date(self) -> str:
         if self.is_festival:
             return f"新曆（{self.display_year}）祭典第 {self.day} 天"
-        prefix = (
-            f"新曆 {self.display_year}"
-            if self.year >= 1
-            else f"新曆（{self.display_year}）"
-        )
-        return f"{prefix} {self.month}/{self.day}"
+        if self.year >= 1:
+            return f"新曆 {self.display_year} {self.month}/{self.day}"
+        return f"新曆（{self.display_year}）{self.month}/{self.day}"
 
 
 def _require_new_year(year: int) -> None:
@@ -227,6 +233,7 @@ def build_year_rows(year: int) -> list[dict[str, object]]:
                 "新曆序日": ignire_date.day_of_year,
                 "是否祭典": "是" if ignire_date.is_festival else "否",
                 "公曆日期": gregorian_date.isoformat(),
+                "星期": weekday_label(gregorian_date),
             }
         )
     return rows

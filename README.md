@@ -31,7 +31,7 @@ python -m pip install -e .
 ./run.sh
 ```
 
-瀏覽器將顯示三組工具：公曆轉新曆、新曆轉公曆，以及規則驗證／全年 CSV 匯出。
+瀏覽器頂端會顯示「今日新曆」（以台北時間計算），下方有四個分頁：公曆轉新曆、新曆轉公曆、月曆檢視，以及規則驗證／全年 CSV 匯出。
 
 ## 開發
 
@@ -41,6 +41,14 @@ python -m pip install -e .
 python -m pip install -e ".[dev]"
 ruff check .
 pytest
+```
+
+測試涵蓋手算的參考日期、與逐日推算版本的全範圍比對、所有公曆年份的固定對齊規則，以及以 Streamlit `AppTest` 執行的介面測試。
+
+若要確認 iOS 的 Swift 引擎與 Python 引擎在全部 3,651,695 個支援日期上完全一致（需要 `swiftc`，約一分鐘）：
+
+```bash
+IGNIRE_SWIFT_PARITY=1 pytest tests/test_swift_parity.py
 ```
 
 如果尚未安裝開發相依套件，核心測試仍可只用 Python 標準函式庫執行：
@@ -57,11 +65,38 @@ ignire_calendar/
   calendar.py                   純曆法領域邏輯
   verification.py               固定對齊規則驗證
   app.py                        Streamlit 使用者介面
-tests/                          邊界、規則與雙向轉換測試
+tests/                          邊界、規則、雙向轉換、介面與 Swift 一致性測試
+ios/                            SwiftUI app、鎖定畫面 widget 與 Swift 曆法引擎
+ios/ParityTool/                 輸出 Swift 引擎全範圍結果的命令列工具
 AGENTS.md                       Codex／coding agent 開發指引
 ```
 
 領域層不依賴 Streamlit 或 pandas，因此可以安全地用於腳本、其他介面或後續 API。`AGENTS.md` 記錄不可破壞的曆法規則與完成標準，方便新的 Codex 工作階段快速接手。
+
+## iPhone 鎖定畫面 Widget
+
+`ios/IgnireCalendar.xcodeproj` 是獨立的 iOS 16+ SwiftUI app，內含 WidgetKit extension，可在鎖定畫面顯示今天的新曆日期。它支援 inline、circular 與 rectangular 三種 Lock Screen widget 版型，一次提供未來七天的午夜時間軸，因此即使系統延後重新載入也會準時換日。App 本身也提供今日新曆與雙向轉換。
+
+在 macOS 以 Xcode 開啟專案：
+
+```bash
+open ios/IgnireCalendar.xcodeproj
+```
+
+在 **Signing & Capabilities** 選擇你的 Apple 開發團隊，並將預設 bundle identifier `com.ignire.calendar` 改為你擁有的唯一識別碼。接著選取 iOS 16+ 模擬器或已連接的 iPhone 執行 app，長按鎖定畫面後即可加入「今日新曆」widget。
+
+核心 Swift 測試可在 Xcode 執行，或在已安裝完整 Xcode 的環境中使用：
+
+```bash
+xcodebuild -project ios/IgnireCalendar.xcodeproj -scheme IgnireCalendar -destination 'platform=iOS Simulator,name=iPhone 16' test
+```
+
+若 shell 仍指向 macOS Command Line Tools，可只在該指令前加上 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`，或將完整 Xcode 設為 active developer directory：
+
+```bash
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+```
 
 ## 授權
 

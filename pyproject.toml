@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ignire-calendar"
-version = "0.2.0"
+version = "0.3.0"
 description = "A 12 x 30-day calendar converter with year-end festival days"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -12,7 +12,7 @@ license = { file = "LICENCE" }
 authors = [{ name = "Ignire Bar" }]
 dependencies = [
   "pandas>=2.0,<3",
-  "streamlit>=1.32,<2",
+  "streamlit>=1.50,<2",
 ]
 
 [project.optional-dependencies]

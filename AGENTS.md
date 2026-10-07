@@ -28,9 +28,18 @@ rule with the user before changing the engine.
 - `ignire_calendar/app.py`: Streamlit presentation only.
 - `calendar_app.py`: stable Streamlit entry point.
 - `tests/`: unit, boundary, invariant, and round-trip tests.
+- `ios/`: standalone SwiftUI iPhone app and its WidgetKit extension.
+- `ios/ParityTool/`: macOS CLI that dumps every Swift conversion for parity tests.
 
 Do not put conversion logic in Streamlit callbacks. Add it to the domain module,
 export public APIs from `ignire_calendar/__init__.py`, and test it directly.
+
+The iOS target deliberately has a matching pure Swift conversion engine in
+`ios/IgnireCalendar/IgnireCalendarCore.swift`; it is compiled into both the app
+and widget extension. Any calendar-rule change must be mirrored in both engines
+and tested on both sides; `IGNIRE_SWIFT_PARITY=1 pytest tests/test_swift_parity.py`
+proves the two engines agree on every supported date. The Swift engine uses
+integer day numbers, not `Foundation.Calendar`, for all calendar arithmetic.
 
 ## Development commands
 
@@ -39,6 +48,15 @@ python -m pip install -e ".[dev]"
 ruff check .
 pytest
 ./run.sh
+```
+
+Swift engine parity and iOS tests (full Xcode required):
+
+```bash
+IGNIRE_SWIFT_PARITY=1 pytest tests/test_swift_parity.py
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
+  -project ios/IgnireCalendar.xcodeproj -scheme IgnireCalendar \
+  -destination 'platform=iOS Simulator,name=iPhone 16' test
 ```
 
 The standard-library-only fallback test command is:
