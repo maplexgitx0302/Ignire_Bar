@@ -42,10 +42,14 @@ change together with a confirmed rule change.
   day numbers, never `Date`, for calendar arithmetic.
 - `docs/app.js`, `docs/index.html`, `docs/style.css`: website UI only.
 - `docs/handbook.html`: the handbook page.
-- `design/hinokarasu.jpg`: the user's original logo. `docs/hinokarasu.jpg`,
-  `docs/hinokarasu-160.jpg`, `docs/apple-touch-icon.png` and `docs/favicon.png`
-  are square crops of it (`sips -c 967 967`, then resized). Do not replace the
-  logo with a drawn one.
+- `design/hinokarasu.JPEG`: the user's original logo (gold crow on navy).
+  `docs/crow.png` and `docs/crow-128.png` are transparent cut-outs of it (alpha
+  from the red channel above the navy background RGB 35,40,48, then cropped);
+  `docs/favicon.png` and `docs/apple-touch-icon.png` put that cut-out on soot
+  #14100D. The cut-out only works on dark surfaces; keep it off light ones.
+  Do not replace the logo with a drawn one.
+- The masthead is always a soot band (both themes) with icon tabs; the current
+  page is marked with `aria-current="page"`, which draws the flame indicator.
 - `scripts/scriptable-widget.js`: Scriptable widget source.
 - `scripts/build-scriptable.mjs`: embeds the engine into the widget, producing
   `docs/scriptable/IgnireCalendar.js`. Never edit the generated file by hand.

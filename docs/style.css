@@ -102,72 +102,180 @@ h3 {
   white-space: nowrap;
 }
 
-.site-header,
 main,
 .site-footer {
   width: min(960px, 100% - 32px);
   margin-inline: auto;
 }
 
-/* Header */
-.site-header {
+/* Masthead: always a soot-black band, so the gold crow (docs/crow.png, cut out
+   from design/hinokarasu.JPEG) sits on the dark it was drawn for. */
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 18px;
+  background: rgb(20 16 13 / 92%);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  color: var(--on-soot);
+}
+
+.masthead-inner {
+  width: min(960px, 100% - 32px);
+  margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: max(18px, env(safe-area-inset-top)) 0 18px;
+  gap: 12px;
+  padding: max(10px, env(safe-area-inset-top)) 0 10px;
+}
+
+.masthead-rule {
+  height: 1.5px;
+  border-radius: 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   color: inherit;
   text-decoration: none;
+  min-width: 0;
 }
 
-/* The logo (design/hinokarasu.jpg) is a gold crow on black: show it as a round seal. */
-.logo {
-  border-radius: 50%;
-  border: 1.5px solid var(--soot-gold);
-  background: #000;
-  object-fit: cover;
+.brand-crow {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  filter: drop-shadow(0 0 10px rgb(240 160 60 / 35%));
+  transition: filter 0.3s;
 }
 
-.brand > span {
+.brand:hover .brand-crow {
+  filter: drop-shadow(0 0 16px rgb(255 170 70 / 60%));
+}
+
+.brand-text {
   display: grid;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .brand-sect {
-  font-size: 0.8rem;
-  letter-spacing: 0.3em;
-  color: var(--gold);
-}
-
-.brand-name {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 1.45rem;
-  letter-spacing: 0.08em;
+  font-size: 1.65rem;
+  letter-spacing: 0.16em;
+  background: linear-gradient(180deg, #fbe7a6 0%, #e2b04a 55%, #b97a22 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-sub {
+  margin-top: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  color: var(--on-soot-muted);
+  white-space: nowrap;
+}
+
+.brand-sub i {
+  font-style: normal;
+  color: var(--soot-gold);
 }
 
 .site-nav {
   display: flex;
-  gap: 4px;
+  gap: 6px;
+  flex: none;
 }
 
 .site-nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
   padding: 8px 14px;
-  border-radius: 999px;
-  color: var(--text-muted);
+  border: 1px solid rgb(217 177 92 / 18%);
+  border-radius: 12px;
+  color: var(--on-soot-muted);
   text-decoration: none;
-  font-weight: 600;
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.site-nav a:hover {
+  color: var(--on-soot);
+  border-color: rgb(217 177 92 / 45%);
 }
 
 .site-nav a[aria-current="page"] {
-  color: var(--text);
-  background: var(--surface-muted);
+  color: #fbe7a6;
+  border-color: rgb(217 177 92 / 70%);
+  background:
+    radial-gradient(70% 90% at 50% 120%, rgb(240 119 58 / 35%), transparent 70%),
+    rgb(217 177 92 / 10%);
+}
+
+/* A small flame glows beneath the current page. */
+.site-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 10px;
+  height: 13px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #fde68a, #f97316 60%, #c2410c);
+  clip-path: path("M5 0 C6.5 3 10 5 10 8.6 A5 4.4 0 0 1 0 8.6 C0 6 2 4.4 3 3 C3.6 5 4.2 5.8 5 6 C4.4 4 4.4 1.6 5 0 Z");
+  filter: drop-shadow(0 0 4px rgb(249 115 22 / 80%));
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-icon .fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.site-nav a[aria-current="page"] .nav-icon .fill {
+  fill: #f97316;
+}
+
+@media (max-width: 400px) {
+  .brand-crow {
+    width: 46px;
+    height: 46px;
+  }
+
+  .brand-sect {
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+  }
+
+  .brand-sub {
+    letter-spacing: 0.2em;
+  }
+
+  .site-nav a {
+    padding: 8px 10px;
+    gap: 4px;
+    letter-spacing: 0.06em;
+  }
 }
 
 main {
@@ -707,11 +815,10 @@ a:focus-visible {
   border: 1px solid #3a2e22;
 }
 
-.handbook-hero img {
-  width: min(200px, 55vw);
+.handbook-crow {
+  width: min(240px, 62vw);
   height: auto;
-  border-width: 2px;
-  box-shadow: 0 0 0 6px rgb(217 177 92 / 12%), 0 0 40px rgb(240 160 60 / 20%);
+  filter: drop-shadow(0 0 28px rgb(240 150 50 / 40%));
 }
 
 .handbook-hero h1 {
@@ -823,4 +930,10 @@ a:focus-visible {
   font-size: 0.95rem;
   color: var(--gold);
   margin-bottom: 6px;
+}
+
+@media (max-width: 400px) {
+  .prayer {
+    letter-spacing: 0.04em;
+  }
 }
