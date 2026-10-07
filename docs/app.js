@@ -1,4 +1,7 @@
-/* Page logic for the Ignire calendar. The calendar rules live in ignire-calendar.js. */
+/*
+ * Page logic for the 火與焰 calendar. The calendar rules live in ignire-calendar.js.
+ * Wording follows doctrine/火神信仰與祈禱手冊.md: 公元, 聖日, 祭典, 首日, 火柱, 日.
+ */
 (() => {
   "use strict";
 
@@ -12,7 +15,16 @@
   }
 
   function headline(ignire) {
-    return ignire.isFestival ? `祭典第 ${ignire.day} 天` : `${ignire.month} 月 ${ignire.day} 日`;
+    if (C.isHolyDay(ignire)) return "聖日";
+    return ignire.isFestival ? `祭典第 ${ignire.day} 日` : `${ignire.month} 月 ${ignire.day} 日`;
+  }
+
+  /** Secondary line: day of year for regular days; festival days are not counted. */
+  function yearLine(ignire) {
+    const year = `新曆 ${C.yearLabel(ignire.year)}`;
+    if (C.isHolyDay(ignire)) return `${year} · 祭典第 1 日 · 點燃火柱`;
+    if (ignire.isFestival) return `${year} · 祭典 · 火柱長燃`;
+    return `${year} · 本年第 ${ignire.dayOfYear} 日`;
   }
 
   function gregorianText(date) {
@@ -48,8 +60,9 @@
     const ignire = C.toIgnire(today);
     const info = C.yearInfo(ignire.year);
     $("today-date").textContent = headline(ignire);
-    $("today-year").textContent = `新曆 ${C.yearLabel(ignire.year)} · 序日 ${ignire.dayOfYear}`;
-    $("today-gregorian").textContent = `公曆 ${gregorianText(today)}`;
+    $("today-year").textContent = yearLine(ignire);
+    $("today-gregorian").textContent = `公元 ${gregorianText(today)}`;
+    document.querySelector(".today").classList.toggle("is-festival", ignire.isFestival);
 
     const percent = Math.round((ignire.dayOfYear / info.length) * 100);
     $("today-progress").setAttribute("aria-valuenow", String(percent));
@@ -58,20 +71,29 @@
     const daysToNewYear = C.dayNumber(info.end) - C.dayNumber(today);
     if (ignire.isFestival) {
       $("today-countdown").textContent =
-        `祭典進行中（共 ${info.festivalDays} 天），${daysToNewYear} 天後迎來新曆 ${C.yearLabel(ignire.year + 1)}。`;
+        `本年祭典共 ${info.festivalDays} 日；${daysToNewYear} 日後為新曆 ${C.yearLabel(ignire.year + 1)}首日。`;
     } else {
-      const festivalStart = C.toGregorian(ignire.year, 0, 1);
-      const days = C.dayNumber(festivalStart) - C.dayNumber(today);
+      const holyDay = C.toGregorian(ignire.year, 0, 1);
+      const days = C.dayNumber(holyDay) - C.dayNumber(today);
       $("today-countdown").textContent =
-        `距離祭典還有 ${days} 天（${C.formatISO(festivalStart)} 起，共 ${info.festivalDays} 天）。`;
+        `距聖日尚有 ${days} 日（公元 ${C.formatISO(holyDay)}，祭典共 ${info.festivalDays} 日）。`;
     }
 
-    // Widget preview mirrors the Scriptable widget layouts.
-    $("preview-inline").textContent = `🔥 新曆 ${C.yearLabel(ignire.year)} ${C.compactText(ignire)}`;
-    $("preview-circular-top").textContent = ignire.isFestival ? "祭典" : `${ignire.month}月`;
+    // Widget preview mirrors the Scriptable widget layouts (scripts/scriptable-widget.js).
+    const year = `新曆 ${C.yearLabel(ignire.year)}`;
+    const holy = C.isHolyDay(ignire);
+    $("preview-inline").textContent = holy
+      ? "🔥 聖日 · 祭典第 1 日"
+      : `🔥 ${ignire.isFestival ? "" : `${year} `}${C.compactText(ignire)}`;
+    $("preview-circular-top").textContent = holy ? "聖日" : ignire.isFestival ? "祭典" : `${ignire.month}月`;
     $("preview-circular-day").textContent = String(ignire.day);
+    $("preview-rect-title").textContent = holy ? "聖日" : ignire.isFestival ? "火柱長燃" : "今日新曆";
     $("preview-rect-date").textContent = C.compactText(ignire);
-    $("preview-rect-year").textContent = `新曆 ${C.yearLabel(ignire.year)} · 序日 ${ignire.dayOfYear}`;
+    $("preview-rect-detail").textContent = holy
+      ? "點燃火柱"
+      : ignire.isFestival
+        ? `${year}祭典`
+        : `${year} · 第 ${ignire.dayOfYear} 日`;
   }
 
   // ---------- Gregorian → Ignire ----------
@@ -83,17 +105,20 @@
   function renderGregorianToIgnire() {
     const output = $("g2i-result");
     if (!g2iDate.value) {
-      showResult(output, "請選擇日期。", null, true);
+      showResult(output, "請選擇公元日期。", null, true);
       return;
     }
     try {
       const date = C.parseISO(g2iDate.value);
       const ignire = C.toIgnire(date);
       const info = C.yearInfo(ignire.year);
+      const position = ignire.isFestival
+        ? C.isHolyDay(ignire) ? "聖日，點燃火柱" : "祭典之日不計入曆法"
+        : `本年第 ${ignire.dayOfYear} 日`;
       showResult(
         output,
         C.formatIgnire(ignire),
-        `${C.weekdayLabel(date)} · 序日 ${ignire.dayOfYear} · 該年共 ${info.length} 天、${info.festivalDays} 個祭典日`
+        `${C.weekdayLabel(date)} · ${position} · 該年祭典共 ${info.festivalDays} 日`
       );
     } catch (error) {
       showResult(output, error.message, null, true);
@@ -120,8 +145,8 @@
     const output = $("i2g-result");
     try {
       const date = C.toGregorian(year, month, day);
-      const source = month === 0 ? `祭典第 ${day} 天` : `${month}/${day}`;
-      showResult(output, `公曆 ${gregorianText(date)}`, `新曆 ${year} 年 ${source}`);
+      const source = month === 0 ? `祭典第 ${day} 日${day === 1 ? "（聖日）" : ""}` : `${month} 月 ${day} 日`;
+      showResult(output, `公元 ${gregorianText(date)}`, `新曆 ${year} 年 ${source}`);
     } catch (error) {
       showResult(output, error.message, null, true);
     }
@@ -156,7 +181,10 @@
     const last = C.addDays(first, length - 1);
     const todayNumber = C.dayNumber(today);
     $("month-title").textContent = `新曆 ${year} 年 ${monthName(month)}`;
-    $("month-caption").textContent = `公曆 ${C.formatISO(first)} 至 ${C.formatISO(last)}`;
+    $("month-caption").textContent =
+      month === 0
+        ? `公元 ${C.formatISO(first)} 至 ${C.formatISO(last)} · 自聖日起 ${length} 日，火柱長燃，不計入曆法`
+        : `公元 ${C.formatISO(first)} 至 ${C.formatISO(last)}`;
     $("month-prev").disabled = year === 1 && month === 1;
     $("month-next").disabled = year === C.MAX_YEAR && month === 0;
 
@@ -175,8 +203,15 @@
       const greg = document.createElement("span");
       greg.className = "greg";
       greg.textContent = `${date.month}/${date.day} ${C.weekdayLabel(date).slice(-1)}`;
-      cell.title = gregorianText(date);
-      cell.append(num, greg);
+      cell.title = `公元 ${gregorianText(date)}`;
+      cell.append(num);
+      if (month === 0 && index === 0) {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = "聖日";
+        cell.append(tag);
+      }
+      cell.append(greg);
       cells.push(cell);
     }
     $("month-grid").replaceChildren(...cells);
@@ -203,7 +238,7 @@
     const from = Number.parseInt($("verify-from").value, 10);
     const to = Number.parseInt($("verify-to").value, 10);
     if (!(from >= 2 && to <= 9998 && from <= to)) {
-      showResult(output, "年份需介於 2–9998，且起始年不可晚於結束年。", null, true);
+      showResult(output, "公元年份需介於 2–9998，且起始年不可晚於結束年。", null, true);
       return;
     }
     let checks = 0;
@@ -216,13 +251,13 @@
         const [expectedMonth, expectedDay] = EXPECTED_ALIGNMENTS(year, month, day);
         checks++;
         if (actual.month !== expectedMonth || actual.day !== expectedDay) {
-          failures.push(`${C.formatISO(date)} → ${C.compactText(actual)}`);
+          failures.push(`公元 ${C.formatISO(date)} → ${C.compactText(actual)}`);
         }
       }
     }
     output.classList.toggle("ok", failures.length === 0);
     if (failures.length === 0) {
-      showResult(output, `✅ 全部 ${checks} 項規則驗證通過（公曆 ${from}–${to} 年）。`);
+      showResult(output, `✅ 全部 ${checks} 項皆符合曆法（公元 ${from}–${to} 年）。`);
     } else {
       showResult(output, `❌ ${failures.length} 項不符`, failures.slice(0, 20).join("、"), true);
     }
@@ -230,7 +265,8 @@
 
   function csvRows(year) {
     const info = C.yearInfo(year);
-    const rows = [["新曆年", "新曆月", "新曆日", "新曆序日", "是否祭典", "公曆日期", "星期"]];
+    // Festival days have no day-of-year: they are not counted in the calendar.
+    const rows = [["新曆年", "月", "日", "本年第幾日", "是否祭典", "公元日期", "星期"]];
     for (let offset = 0; offset < info.length; offset++) {
       const date = C.addDays(info.start, offset);
       const ignire = C.toIgnire(date);
@@ -238,7 +274,7 @@
         year,
         ignire.isFestival ? "祭典" : ignire.month,
         ignire.day,
-        ignire.dayOfYear,
+        ignire.isFestival ? "" : ignire.dayOfYear,
         ignire.isFestival ? "是" : "否",
         C.formatISO(date),
         C.weekdayLabel(date),
@@ -251,7 +287,7 @@
     const year = clampYear($("export-year").value, 1);
     const info = C.yearInfo(year);
     $("export-caption").textContent =
-      `新曆 ${year} 年：公曆 ${C.formatISO(info.start)} 起，共 ${info.length} 天，其中 ${info.festivalDays} 天為祭典。`;
+      `新曆 ${year} 年首日為公元 ${C.formatISO(info.start)}；曆法 360 日，另有祭典 ${info.festivalDays} 日。`;
   }
 
   function downloadYearCsv() {
@@ -278,13 +314,14 @@
     $("copy-status").textContent = "無法載入腳本，請改用「下載腳本」。";
   }
 
-  async function copyScript() {
-    const status = $("copy-status");
+  /** Copy text to the clipboard; returns whether it worked. */
+  async function copyText(text) {
     try {
-      await navigator.clipboard.writeText(scriptText);
+      await navigator.clipboard.writeText(text);
+      return true;
     } catch {
-      // Older browsers: fall back to a temporary selection.
-      const area = Object.assign(document.createElement("textarea"), { value: scriptText });
+      // Older browsers and file:// pages: fall back to a temporary selection.
+      const area = Object.assign(document.createElement("textarea"), { value: text });
       area.setAttribute("readonly", "");
       area.style.position = "fixed";
       area.style.opacity = "0";
@@ -292,10 +329,21 @@
       area.select();
       const copied = document.execCommand("copy");
       area.remove();
-      if (!copied) {
-        status.textContent = "複製失敗，請改用「下載腳本」。";
-        return;
-      }
+      return copied;
+    }
+  }
+
+  async function copySiteUrl() {
+    const button = $("copy-url");
+    button.textContent = (await copyText($("site-url").textContent)) ? "已複製" : "請手動複製";
+    setTimeout(() => (button.textContent = "複製網址"), 2000);
+  }
+
+  async function copyScript() {
+    const status = $("copy-status");
+    if (!(await copyText(scriptText))) {
+      status.textContent = "複製失敗，請改用「下載腳本」。";
+      return;
     }
     status.textContent = "已複製！到 Scriptable 新增腳本並貼上。";
   }
@@ -329,6 +377,7 @@
   $("export-year").addEventListener("input", renderExportCaption);
   $("export-run").addEventListener("click", downloadYearCsv);
   $("copy-script").addEventListener("click", copyScript);
+  $("copy-url").addEventListener("click", copySiteUrl);
 
   // Roll over to the new day if the page stays open past midnight.
   function refreshIfDayChanged() {

@@ -51,6 +51,7 @@ async function runWidget(family, now) {
       super(...(args.length ? args : [now.getTime()]));
     }
   }
+  // Only methods that exist in Scriptable's Font API (docs.scriptable.app/font).
   const font = (name) => (size) => ({ name, size });
   const context = vm.createContext({
     module: { exports: {} },
@@ -90,6 +91,7 @@ test("lock-screen inline widget", async () => {
   assert.equal(setWidget, widget);
   assert.ok(completed);
   assert.deepEqual(widget.texts, ["🔥 新曆 4 年 2/17"]);
+  assert.equal(widget.texts.join("").includes("天"), false);
   assert.equal(widget.url, WEB_URL);
 });
 
@@ -102,19 +104,28 @@ test("lock-screen circular widget", async () => {
 
 test("lock-screen rectangular widget", async () => {
   const { widget } = await runWidget("accessoryRectangular", OCT_7_2026);
-  assert.deepEqual(widget.texts, ["今日新曆", "2/17", "新曆 4 年 · 序日 47"]);
+  assert.deepEqual(widget.texts, ["今日新曆", "2/17", "新曆 4 年 · 第 47 日"]);
 });
 
-test("festival day and pre-epoch year", async () => {
+test("holy day, festival days, and pre-epoch year use the handbook's wording", async () => {
+  const holyDay = new Date(2026, 7, 17, 12); // Gregorian 8/17 is always 聖日
+  assert.deepEqual((await runWidget("accessoryInline", holyDay)).widget.texts, ["🔥 聖日 · 祭典第 1 日"]);
+  assert.deepEqual((await runWidget("accessoryCircular", holyDay)).widget.texts, ["聖日", "1"]);
+  assert.deepEqual((await runWidget("accessoryRectangular", holyDay)).widget.texts, [
+    "聖日",
+    "祭典第 1 日",
+    "點燃火柱",
+  ]);
+
   const festival = await runWidget("accessoryCircular", new Date(2024, 7, 21, 12));
   assert.deepEqual(festival.widget.texts, ["祭典", "5"]);
   const before = await runWidget("accessoryRectangular", new Date(2023, 7, 22, 12));
-  assert.deepEqual(before.widget.texts, ["今日新曆", "祭典第 6 天", "新曆 前一年 · 序日 366"]);
+  assert.deepEqual(before.widget.texts, ["火柱長燃", "祭典第 6 日", "新曆 前一年祭典"]);
 });
 
 test("home-screen widget and in-app preview", async () => {
   const home = await runWidget("small", OCT_7_2026);
-  assert.deepEqual(home.widget.texts, ["🔥 今日新曆", "2/17", "新曆 4 年", "2026-10-07 星期三"]);
+  assert.deepEqual(home.widget.texts, ["🔥 今日新曆", "2/17", "新曆 4 年", "公元 2026-10-07 星期三"]);
   const preview = await runWidget(null, OCT_7_2026);
   assert.equal(preview.widget.presented, "small");
   assert.equal(preview.setWidget, undefined);

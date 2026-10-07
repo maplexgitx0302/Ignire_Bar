@@ -95,11 +95,16 @@ test("labels and formatting", () => {
   assert.equal(C.yearLabel(1), "1 年");
   assert.equal(C.yearLabel(0), "前一年");
   assert.equal(C.yearLabel(-1), "前2年");
-  assert.equal(C.formatIgnire(C.toIgnire(g(2026, 10, 7))), "新曆 4 年 2/17");
-  assert.equal(C.formatIgnire(C.toIgnire(g(2023, 8, 22))), "新曆（前一年）祭典第 6 天");
-  assert.equal(C.formatIgnire(C.toIgnire(g(2021, 9, 1))), "新曆（前2年）1/11");
-  assert.equal(C.formatIgnire(C.toIgnire(g(2024, 8, 17))), "新曆（1 年）祭典第 1 天");
-  assert.equal(C.compactText(C.toIgnire(g(2024, 8, 17))), "祭典第 1 天");
+  assert.equal(C.formatIgnire(C.toIgnire(g(2026, 10, 7))), "新曆 4 年 2 月 17 日");
+  assert.equal(C.formatIgnire(C.toIgnire(g(2023, 8, 22))), "新曆（前一年）祭典第 6 日");
+  assert.equal(C.formatIgnire(C.toIgnire(g(2021, 9, 1))), "新曆（前2年）1 月 11 日");
+  assert.equal(C.formatIgnire(C.toIgnire(g(2024, 8, 17))), "新曆（1 年）祭典第 1 日");
+  assert.equal(C.compactText(C.toIgnire(g(2026, 10, 7))), "2/17");
+  assert.equal(C.compactText(C.toIgnire(g(2024, 8, 17))), "祭典第 1 日");
+  for (let year = 2; year <= 9998; year += 37) {
+    assert.ok(C.isHolyDay(C.toIgnire(g(year, 8, 17))), `${year}-08-17 is the holy day`);
+    assert.ok(!C.isHolyDay(C.toIgnire(g(year, 8, 18))));
+  }
   assert.equal(C.weekdayLabel(g(1970, 1, 1)), "星期四");
   assert.equal(C.weekdayLabel(g(2026, 10, 7)), "星期三");
   assert.equal(C.weekdayLabel(g(1, 1, 1)), "星期一");

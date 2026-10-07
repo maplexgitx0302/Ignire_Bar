@@ -1,8 +1,11 @@
-// Ignire 新曆 — Scriptable widget
+// 火與焰新曆 — Scriptable widget
 //
-// Shows today's Ignire date on the Lock Screen (inline, circular, rectangular)
-// or the Home Screen (small, medium). Paste this whole file into a new script in
-// the Scriptable app, then add a Scriptable widget and choose this script.
+// Shows today's date in the 火與焰 calendar on the Lock Screen (inline,
+// circular, rectangular) or the Home Screen (small, medium). Paste this whole
+// file into a new script in the Scriptable app, then add a Scriptable widget
+// and choose this script.
+//
+// 火焰是淨化，火焰是祝福，火焰是重生。
 //
 // Generated from scripts/scriptable-widget.js by scripts/build-scriptable.mjs.
 // Edit those sources, not docs/scriptable/IgnireCalendar.js.
@@ -13,7 +16,11 @@
  * Rules
  * - Ignire year 1, month 1, day 1 is Gregorian 2023-08-23.
  * - The new year in Gregorian year Y is on 8/23 when Y+1 is a leap year, otherwise 8/22.
- * - Therefore Gregorian 3/1 is always 7/12 and 8/17 is always festival day 1.
+ * - Therefore Gregorian 3/1 is always 7/12 and 8/17 (聖日, the holy day) is always
+ *   festival day 1. Festival days are not counted in the 360-day calendar.
+ *
+ * User-facing wording follows doctrine/火神信仰與祈禱手冊.md: 公元, 聖日, 祭典, 首日,
+ * and days counted in 日.
  *
  * Dates are handled as integer day numbers (days since 1970-01-01), never as
  * JavaScript Date objects, so time zones and daylight saving cannot shift a day.
@@ -55,7 +62,7 @@ const IgnireCalendar = (() => {
 
   function requireGregorian(date) {
     if (!date || !isValidGregorian(date.year, date.month, date.day)) {
-      throw new RangeError("無效的公曆日期。");
+      throw new RangeError("無效的公元日期。");
     }
   }
 
@@ -98,7 +105,7 @@ const IgnireCalendar = (() => {
   /** The Ignire new year that falls in a Gregorian year. */
   function newYearStart(gregorianYear) {
     if (!Number.isInteger(gregorianYear) || gregorianYear < 1 || gregorianYear > 9999) {
-      throw new RangeError("公曆年份超出支援範圍（1–9999）。");
+      throw new RangeError("公元年份超出支援範圍（1–9999）。");
     }
     return { year: gregorianYear, month: 8, day: isLeapYear(gregorianYear + 1) ? 23 : 22 };
   }
@@ -125,7 +132,7 @@ const IgnireCalendar = (() => {
     const number = dayNumber(date);
     if (number < MIN_DAY_NUMBER || number > MAX_DAY_NUMBER) {
       throw new RangeError(
-        `公曆日期必須介於 ${formatISO(MIN_DATE)} 與 ${formatISO(MAX_DATE)} 之間。`
+        `公元日期必須介於 ${formatISO(MIN_DATE)} 與 ${formatISO(MAX_DATE)} 之間。`
       );
     }
     let startYear = date.year;
@@ -164,7 +171,7 @@ const IgnireCalendar = (() => {
       if (month < 1 || month > MONTHS_PER_YEAR) {
         throw new RangeError("月份必須是 1–12，祭典請用 0。");
       }
-      if (day < 1 || day > DAYS_PER_MONTH) throw new RangeError("每個月只有 30 天。");
+      if (day < 1 || day > DAYS_PER_MONTH) throw new RangeError("每月只有 30 日。");
       offset = (month - 1) * DAYS_PER_MONTH + day - 1;
     }
     return addDays(info.start, offset);
@@ -177,16 +184,23 @@ const IgnireCalendar = (() => {
     return yearsBefore === 1 ? "前一年" : `前${yearsBefore}年`;
   }
 
-  function formatIgnire(date) {
-    const label = yearLabel(date.year);
-    if (date.month === 0) return `新曆（${label}）祭典第 ${date.day} 天`;
-    return date.year >= 1
-      ? `新曆 ${label} ${date.month}/${date.day}`
-      : `新曆（${label}）${date.month}/${date.day}`;
+  /** Festival day 1 is the holy day (聖日), Gregorian 8/17. */
+  function isHolyDay(date) {
+    return date.month === 0 && date.day === 1;
   }
 
+  /** Full text, e.g. "新曆 4 年 2 月 17 日" or "新曆（4 年）祭典第 1 日". */
+  function formatIgnire(date) {
+    const label = yearLabel(date.year);
+    if (date.month === 0) return `新曆（${label}）祭典第 ${date.day} 日`;
+    return date.year >= 1
+      ? `新曆 ${label} ${date.month} 月 ${date.day} 日`
+      : `新曆（${label}）${date.month} 月 ${date.day} 日`;
+  }
+
+  /** Short text for widgets, e.g. "2/17" or "祭典第 1 日". */
   function compactText(date) {
-    return date.month === 0 ? `祭典第 ${date.day} 天` : `${date.month}/${date.day}`;
+    return date.month === 0 ? `祭典第 ${date.day} 日` : `${date.month}/${date.day}`;
   }
 
   function weekdayLabel(date) {
@@ -235,6 +249,7 @@ const IgnireCalendar = (() => {
     toIgnire,
     toGregorian,
     yearLabel,
+    isHolyDay,
     formatIgnire,
     compactText,
     weekdayLabel,
@@ -248,7 +263,10 @@ if (typeof module === "object" && module && module.exports) {
   module.exports = IgnireCalendar;
 }
 
-const ACCENT = new Color("#D96C3B");
+const GOLD = new Color("#D9B15C");
+const SOOT = new Color("#14100D");
+const EMBER = new Color("#FFB27A");
+const ASH = new Color("#BBA68C");
 const WEB_URL = "https://maplexgitx0302.github.io/Ignire_Bar/";
 
 function nextLocalMidnight(now) {
@@ -267,50 +285,66 @@ function addText(container, text, font, { color, center = false, minimumScaleFac
   return element;
 }
 
+// Wording follows 《火神信仰與祈禱手冊》: 聖日 is festival day 1, festival days are
+// not counted in the calendar, and the fire pillar burns throughout the festival.
+function describe(ignire) {
+  const year = `新曆 ${IgnireCalendar.yearLabel(ignire.year)}`;
+  const date = IgnireCalendar.compactText(ignire);
+  if (IgnireCalendar.isHolyDay(ignire)) {
+    return { inline: "🔥 聖日 · 祭典第 1 日", circularTop: "聖日", title: "聖日", date, detail: "點燃火柱", year };
+  }
+  if (ignire.isFestival) {
+    return { inline: `🔥 ${date}`, circularTop: "祭典", title: "火柱長燃", date, detail: `${year}祭典`, year };
+  }
+  return {
+    inline: `🔥 ${year} ${date}`,
+    circularTop: `${ignire.month}月`,
+    title: "今日新曆",
+    date,
+    detail: `${year} · 第 ${ignire.dayOfYear} 日`,
+    year,
+  };
+}
+
 function buildWidget(family, now) {
   const gregorian = IgnireCalendar.today(now);
   const ignire = IgnireCalendar.toIgnire(gregorian);
-  const yearText = `新曆 ${IgnireCalendar.yearLabel(ignire.year)}`;
+  const text = describe(ignire);
   const widget = new ListWidget();
   widget.refreshAfterDate = nextLocalMidnight(now);
   widget.url = WEB_URL;
 
   if (family === "accessoryInline") {
-    addText(widget, `🔥 ${yearText} ${IgnireCalendar.compactText(ignire)}`, Font.systemFont(14));
+    addText(widget, text.inline, Font.systemFont(14));
   } else if (family === "accessoryCircular") {
     widget.addAccessoryWidgetBackground = true;
     widget.addSpacer();
-    addText(widget, ignire.isFestival ? "祭典" : `${ignire.month}月`, Font.systemFont(11), {
-      center: true,
-    });
+    addText(widget, text.circularTop, Font.systemFont(11), { center: true });
     addText(widget, String(ignire.day), Font.boldRoundedSystemFont(24), { center: true });
     widget.addSpacer();
   } else if (family === "accessoryRectangular") {
-    addText(widget, "今日新曆", Font.systemFont(12));
-    addText(widget, IgnireCalendar.compactText(ignire), Font.boldRoundedSystemFont(22), {
-      minimumScaleFactor: 0.6,
-    });
-    addText(widget, `${yearText} · 序日 ${ignire.dayOfYear}`, Font.systemFont(12), {
-      minimumScaleFactor: 0.7,
-    });
+    addText(widget, text.title, Font.systemFont(12));
+    addText(widget, text.date, Font.boldRoundedSystemFont(22), { minimumScaleFactor: 0.6 });
+    addText(widget, text.detail, Font.systemFont(12), { minimumScaleFactor: 0.7 });
   } else {
-    // Home Screen widgets and the in-app preview.
-    widget.backgroundColor = Color.dynamic(new Color("#FFF8EF"), new Color("#241A14"));
-    const text = Color.dynamic(new Color("#2B2118"), new Color("#F6EBDD"));
-    const muted = Color.dynamic(new Color("#7A6555"), new Color("#BCA894"));
-    addText(widget, "🔥 今日新曆", Font.semiboldSystemFont(13), { color: ACCENT });
+    // Home Screen widgets and the in-app preview: soot black and gold, like the emblem.
+    widget.backgroundColor = SOOT;
+    addText(widget, `🔥 ${text.title}`, Font.semiboldSystemFont(13), { color: GOLD });
     widget.addSpacer();
-    addText(widget, IgnireCalendar.compactText(ignire), Font.boldRoundedSystemFont(36), {
-      color: text,
+    addText(widget, text.date, Font.boldRoundedSystemFont(36), {
+      color: ignire.isFestival ? EMBER : new Color("#F3E9D8"),
       minimumScaleFactor: 0.5,
     });
-    addText(widget, yearText, Font.semiboldSystemFont(15), { color: text });
+    addText(widget, ignire.isFestival ? text.detail : text.year, Font.semiboldSystemFont(15), {
+      color: GOLD,
+      minimumScaleFactor: 0.7,
+    });
     widget.addSpacer(4);
     addText(
       widget,
-      `${IgnireCalendar.formatISO(gregorian)} ${IgnireCalendar.weekdayLabel(gregorian)}`,
-      Font.systemFont(12),
-      { color: muted, minimumScaleFactor: 0.7 }
+      `公元 ${IgnireCalendar.formatISO(gregorian)} ${IgnireCalendar.weekdayLabel(gregorian)}`,
+      Font.systemFont(11),
+      { color: ASH, minimumScaleFactor: 0.6 }
     );
   }
   return widget;

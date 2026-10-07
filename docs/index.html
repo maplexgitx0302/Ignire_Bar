@@ -3,60 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Ignire 新曆</title>
-  <meta name="description" content="Ignire 新曆：12 個 30 天的月份，加上年末 5 或 6 個祭典日。今日新曆、雙向轉換、月曆與 iPhone 鎖定畫面 widget。">
-  <meta name="theme-color" content="#FFF8EF" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#17110D" media="(prefers-color-scheme: dark)">
+  <title>火與焰 · 新曆</title>
+  <meta name="description" content="火與焰的曆法：一年 12 個月，每月 30 日；每年自聖日（公元 8 月 17 日）起為期五至六日的祭典不計入曆法。">
+  <meta name="theme-color" content="#F5EEE3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0E0B09" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Ignire 新曆">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta name="apple-mobile-web-app-title" content="火與焰新曆">
+  <link rel="icon" href="emblem.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <div class="brand">
-      <img src="icon.svg" alt="" width="36" height="36">
-      <div>
-        <h1>Ignire 新曆</h1>
-        <p>12 × 30 天，加上年末 5／6 個祭典日</p>
-      </div>
-    </div>
-    <a class="instagram" href="https://www.instagram.com/ignire.bar/" target="_blank" rel="noopener">Instagram</a>
+    <a class="brand" href="./">
+      <img src="emblem.svg" alt="" width="44" height="44">
+      <span>
+        <span class="brand-sect">火與焰</span>
+        <span class="brand-name">新曆</span>
+      </span>
+    </a>
+    <nav class="site-nav" aria-label="主選單">
+      <a href="./" aria-current="page">曆法</a>
+      <a href="handbook.html">手冊</a>
+    </nav>
   </header>
 
   <main>
-    <section class="today card" aria-labelledby="today-title">
-      <p class="eyebrow" id="today-title">今日新曆</p>
+    <section class="today" aria-labelledby="today-title">
+      <p class="eyebrow" id="today-title">今日</p>
       <p class="today-date" id="today-date">—</p>
       <p class="today-year" id="today-year"></p>
       <p class="today-gregorian" id="today-gregorian"></p>
-      <div class="progress" role="progressbar" aria-label="今年進度" id="today-progress"
+      <div class="progress" role="progressbar" aria-label="本年進度" id="today-progress"
            aria-valuemin="0" aria-valuemax="100">
         <div class="progress-bar" id="today-progress-bar"></div>
       </div>
       <p class="today-countdown" id="today-countdown"></p>
+      <div class="tail-rule" aria-hidden="true"></div>
+      <p class="prayer">火焰是淨化，火焰是祝福，火焰是重生。</p>
     </section>
 
-    <section class="converters" aria-label="日期轉換">
+    <section class="converters" aria-label="日期換算">
       <div class="card">
-        <h2>公曆 → 新曆</h2>
+        <h2>公元 → 新曆</h2>
         <label class="field">
-          <span>公曆日期</span>
+          <span>公元日期</span>
           <input type="date" id="g2i-date" required>
         </label>
         <output class="result" id="g2i-result" for="g2i-date" aria-live="polite"></output>
       </div>
 
       <div class="card">
-        <h2>新曆 → 公曆</h2>
+        <h2>新曆 → 公元</h2>
         <div class="field-row">
           <label class="field">
             <span>新曆年</span>
             <input type="number" id="i2g-year" inputmode="numeric" min="1" step="1">
           </label>
           <label class="field">
-            <span>月份</span>
+            <span>月</span>
             <select id="i2g-month"></select>
           </label>
           <label class="field">
@@ -75,19 +83,31 @@
           <button type="button" class="icon-button" id="month-prev" aria-label="上個月">‹</button>
           <label class="sr-only" for="month-year">新曆年</label>
           <input type="number" id="month-year" inputmode="numeric" min="1" step="1">
-          <label class="sr-only" for="month-month">月份</label>
+          <label class="sr-only" for="month-month">月</label>
           <select id="month-month"></select>
           <button type="button" class="icon-button" id="month-next" aria-label="下個月">›</button>
-          <button type="button" class="text-button" id="month-today">今天</button>
+          <button type="button" class="text-button" id="month-today">今日</button>
         </div>
       </div>
       <p class="hint" id="month-caption"></p>
       <ol class="month-grid" id="month-grid"></ol>
     </section>
 
+    <section class="card" aria-labelledby="rules-title">
+      <h2 id="rules-title">聖日與曆法</h2>
+      <dl class="rules">
+        <div><dt>聖日</dt><dd>每年公元 8 月 17 日。</dd></div>
+        <div><dt>曆法</dt><dd>一年分為 12 個月，每月 30 日，共計 360 日。</dd></div>
+        <div><dt>祭典</dt><dd>自每年聖日起計，為期五至六日，祭典所用之日並不計入曆法。祭典首日點燃火柱，祭典期間維持不滅。</dd></div>
+        <div><dt>首日</dt><dd>每年首日為公元 8 月 22 日；祭典為六日之年（次一公元年為閏年），首日順延為 8 月 23 日。</dd></div>
+        <div><dt>紀元</dt><dd>新曆 1 年首日為公元 2023 年 8 月 23 日；此前之年稱「前一年」、「前 2 年」⋯⋯，不稱「0 年」。</dd></div>
+      </dl>
+      <p class="hint">依此規則，公元 3 月 1 日恆為新曆 7 月 12 日。完整內容見<a href="handbook.html">《火神信仰與祈禱手冊》</a>。</p>
+    </section>
+
     <section class="card widget" aria-labelledby="widget-title">
-      <h2 id="widget-title">iPhone 鎖定畫面 Widget</h2>
-      <p>透過免費的 <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a> App，就能在鎖定畫面或主畫面顯示今天的新曆日期。</p>
+      <h2 id="widget-title">iPhone 鎖定畫面</h2>
+      <p>透過免費的 <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a> App，將今日新曆放上鎖定畫面或主畫面。</p>
 
       <div class="lock-preview" aria-hidden="true">
         <p class="lock-inline" id="preview-inline"></p>
@@ -95,9 +115,9 @@
         <div class="lock-widgets">
           <div class="lock-circular"><span id="preview-circular-top"></span><strong id="preview-circular-day"></strong></div>
           <div class="lock-rectangular">
-            <span>今日新曆</span>
+            <span id="preview-rect-title"></span>
             <strong id="preview-rect-date"></strong>
-            <span id="preview-rect-year"></span>
+            <span id="preview-rect-detail"></span>
           </div>
         </div>
       </div>
@@ -105,37 +125,34 @@
       <ol class="steps">
         <li>在 App Store 安裝 <strong>Scriptable</strong>。</li>
         <li>按下方的「複製腳本」。</li>
-        <li>打開 Scriptable，按右上角 <strong>＋</strong> 新增腳本，貼上後將名稱改為「Ignire 新曆」。</li>
-        <li>長按鎖定畫面 →「自訂」→ 選鎖定畫面 → 點 widget 區域，加入 <strong>Scriptable</strong> 的任一款式。</li>
-        <li>點一下剛加入的 widget，在 <strong>Script</strong> 選擇「Ignire 新曆」。</li>
+        <li>打開 Scriptable，按右上角 <strong>＋</strong> 新增腳本，貼上後將名稱改為「火與焰新曆」。</li>
+        <li>長按鎖定畫面 →「自訂」→ 選鎖定畫面 → 點小工具區域，加入 <strong>Scriptable</strong> 的任一款式。</li>
+        <li>點一下剛加入的小工具，在 <strong>Script</strong> 選擇「火與焰新曆」。</li>
+        <li>
+          在 <strong>When Interacting</strong> 選擇 <strong>Open URL</strong>，URL 填入：
+          <span class="url-row">
+            <code id="site-url">https://maplexgitx0302.github.io/Ignire_Bar/</code>
+            <button type="button" class="text-button small-button" id="copy-url">複製網址</button>
+          </span>
+          之後點一下小工具就會開啟本頁。
+        </li>
       </ol>
       <div class="actions">
         <button type="button" class="primary-button" id="copy-script" disabled>複製腳本</button>
-        <a class="text-button" href="scriptable/IgnireCalendar.js" download="Ignire 新曆.js">下載腳本</a>
+        <a class="text-button" href="scriptable/IgnireCalendar.js" download="火與焰新曆.js">下載腳本</a>
         <span class="hint" id="copy-status" aria-live="polite"></span>
       </div>
-      <p class="hint">Widget 會在每天午夜後更新；實際時間由 iOS 決定，偶爾會晚幾分鐘。</p>
-    </section>
-
-    <section class="card" aria-labelledby="rules-title">
-      <h2 id="rules-title">曆法規則</h2>
-      <ul class="rules">
-        <li><strong>紀元：</strong>新曆 1 年 1/1 是公曆 2023-08-23。</li>
-        <li><strong>月份：</strong>每年 12 個月，每月 30 天；之後是 5 或 6 個祭典日。</li>
-        <li><strong>年界線：</strong>公曆 Y 年的新曆元旦，在 Y+1 為閏年時是 8/23，否則是 8/22。</li>
-        <li><strong>固定對齊：</strong>公曆 3/1 永遠是新曆 7/12；8/17 永遠是祭典第 1 天。</li>
-        <li><strong>紀元以前：</strong>顯示為「前一年」、「前 2 年」⋯⋯，不使用「0 年」。</li>
-      </ul>
+      <p class="hint">小工具於每日午夜後更新；實際時間由 iOS 決定，偶爾會晚幾分鐘。</p>
     </section>
 
     <section class="card tools" aria-labelledby="tools-title">
       <h2 id="tools-title">驗證與匯出</h2>
       <div class="tool">
         <h3>規則驗證</h3>
-        <p class="hint">檢查指定公曆年份內的 2/28（或 2/29）、3/1、8/17、8/22、8/23 是否都符合固定對齊規則。</p>
+        <p class="hint">檢查指定公元年份內的 2/28（或 2/29）、3/1、8/17、8/22、8/23 是否皆符合曆法。</p>
         <div class="field-row">
-          <label class="field"><span>起始公曆年</span><input type="number" id="verify-from" min="2" max="9998" value="2020"></label>
-          <label class="field"><span>結束公曆年</span><input type="number" id="verify-to" min="2" max="9998" value="2030"></label>
+          <label class="field"><span>起始公元年</span><input type="number" id="verify-from" min="2" max="9998" value="2020"></label>
+          <label class="field"><span>結束公元年</span><input type="number" id="verify-to" min="2" max="9998" value="2030"></label>
           <button type="button" class="primary-button" id="verify-run">執行驗證</button>
         </div>
         <output class="result" id="verify-result" aria-live="polite"></output>
@@ -152,7 +169,8 @@
   </main>
 
   <footer class="site-footer">
-    <p>Ignire 新曆 · 紀元 2023-08-23 · 「今天」依你裝置的時區計算 · <a href="https://github.com/maplexgitx0302/Ignire_Bar" target="_blank" rel="noopener">GitHub</a></p>
+    <p class="prayer">火焰是淨化，火焰是祝福，火焰是重生。</p>
+    <p>火與焰 · <a href="https://www.instagram.com/ignire.bar/" target="_blank" rel="noopener">Ignire Bar</a> · 「今日」依你裝置的時區計算 · <a href="https://github.com/maplexgitx0302/Ignire_Bar" target="_blank" rel="noopener">GitHub</a></p>
   </footer>
 
   <script src="ignire-calendar.js"></script>

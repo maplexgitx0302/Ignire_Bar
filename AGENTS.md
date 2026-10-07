@@ -24,12 +24,24 @@ rule with the user before changing the engine. `PYTHON_ENGINE_SHA256` in
 `test/calendar.test.mjs` pins the output for every supported date; it must only
 change together with a confirmed rule change.
 
+## Doctrine and wording
+
+`doctrine/火神信仰與祈禱手冊.md` is the leader's original text; never edit it.
+`docs/handbook.html` reproduces it verbatim. All user-facing wording must follow it:
+
+- 公元 (not 公曆); count days in 日 (not 天); 8/17 is 聖日 (festival day 1);
+  the year's first day is 首日; the sect is 火與焰; members are 信徒 and 使者.
+- Festival days are not counted in the calendar: never show a day-of-year for them.
+- Visual language: soot black and gold; rainbow only at the tip of a line
+  (`.tail-rule`), like the emblem's tail.
+
 ## Project map
 
 - `docs/ignire-calendar.js`: the only calendar engine. Classic script with no
   dependencies; works in browsers, Node (`require`), and Scriptable. Uses integer
   day numbers, never `Date`, for calendar arithmetic.
 - `docs/app.js`, `docs/index.html`, `docs/style.css`: website UI only.
+- `docs/handbook.html`: the handbook page; `docs/emblem.svg`: the emblem.
 - `scripts/scriptable-widget.js`: Scriptable widget source.
 - `scripts/build-scriptable.mjs`: embeds the engine into the widget, producing
   `docs/scriptable/IgnireCalendar.js`. Never edit the generated file by hand.

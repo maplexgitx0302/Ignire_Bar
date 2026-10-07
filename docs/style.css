@@ -1,39 +1,53 @@
+/*
+ * Visual language from 《火神信仰與祈禱手冊》: soot-blackened feathers, a golden
+ * statue, fire, and seven colours that survive only at the very tip of the tail.
+ * Rainbow is therefore used sparingly, only at the end of a line (.tail-rule).
+ */
 :root {
   color-scheme: light dark;
-  --bg: #fff8ef;
-  --surface: #ffffff;
-  --surface-muted: #f6ece0;
-  --text: #2b2118;
-  --text-muted: #7a6555;
-  --border: #ead9c6;
-  --accent: #d96c3b;
-  --accent-strong: #b9531f;
-  --accent-soft: #fbe3d4;
-  --festival: #a8432f;
-  --festival-soft: #f8dcd3;
-  --success: #2f7d4f;
-  --danger: #b3261e;
-  --shadow: 0 1px 2px rgb(60 30 10 / 6%), 0 8px 24px rgb(60 30 10 / 6%);
-  --radius: 18px;
+  --bg: #f5eee3;
+  --surface: #fffaf2;
+  --surface-muted: #efe4d4;
+  --text: #1c1613;
+  --text-muted: #6e5d4e;
+  --border: #e2d2bc;
+  --gold: #a5771c;
+  --gold-strong: #8a6112;
+  --gold-soft: #f3e3bd;
+  --flame: #c2410c;
+  --flame-soft: #fbe1d1;
+  --success: #2f6e45;
+  --danger: #a3261c;
+  --soot: #14100d;
+  --soot-raised: #201915;
+  --on-soot: #f3e9d8;
+  --on-soot-muted: #bba68c;
+  --soot-gold: #d9b15c;
+  --shadow: 0 1px 2px rgb(40 25 10 / 6%), 0 10px 28px rgb(40 25 10 / 7%);
+  --radius: 16px;
+  --rainbow: linear-gradient(90deg, #e53935, #fb8c00, #fdd835, #43a047, #1e88e5, #3949ab, #8e24aa);
   --font: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei",
     "Segoe UI", sans-serif;
+  --serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #17110d;
-    --surface: #221a14;
-    --surface-muted: #2c221a;
-    --text: #f6ebdd;
-    --text-muted: #bca894;
-    --border: #3b2e24;
-    --accent: #f08a54;
-    --accent-strong: #ffa070;
-    --accent-soft: #4a2c1c;
-    --festival: #ff9b85;
-    --festival-soft: #4a2420;
-    --success: #6fcf97;
-    --danger: #ff8a80;
+    --bg: #0e0b09;
+    --surface: #18130f;
+    --surface-muted: #221b16;
+    --text: #f3e9d8;
+    --text-muted: #b3a08a;
+    --border: #2f261f;
+    --gold: #d9b15c;
+    --gold-strong: #ecc977;
+    --gold-soft: #3a2d17;
+    --flame: #f0773a;
+    --flame-soft: #3d2016;
+    --success: #79c995;
+    --danger: #ff8a7a;
+    --soot: #120e0b;
+    --soot-raised: #1d1712;
     --shadow: none;
   }
 }
@@ -51,24 +65,31 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 a {
-  color: var(--accent-strong);
+  color: var(--gold-strong);
+  text-underline-offset: 3px;
 }
 
-h1, h2, h3, p {
+h1, h2, h3, p, dl, dd {
   margin: 0;
 }
 
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 h2 {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   margin-bottom: 0.9rem;
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: 1.02rem;
   margin-bottom: 0.35rem;
 }
 
@@ -88,34 +109,57 @@ main,
   margin-inline: auto;
 }
 
+/* Header */
 .site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: max(20px, env(safe-area-inset-top)) 0 20px;
+  padding: max(18px, env(safe-area-inset-top)) 0 18px;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.brand h1 {
-  font-size: 1.3rem;
-  line-height: 1.2;
-}
-
-.brand p,
-.hint {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-}
-
-.instagram {
-  font-size: 0.9rem;
+  color: inherit;
   text-decoration: none;
+}
+
+.brand > span {
+  display: grid;
+  line-height: 1.15;
+}
+
+.brand-sect {
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+}
+
+.site-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.site-nav a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--text);
+  background: var(--surface-muted);
 }
 
 main {
@@ -132,50 +176,80 @@ main {
   min-width: 0;
 }
 
-/* Today */
-.today {
-  text-align: center;
-  padding: 32px 22px 26px;
-  background:
-    radial-gradient(120% 90% at 50% 0%, var(--accent-soft), transparent 70%),
-    var(--surface);
+.hint {
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }
 
-.eyebrow {
-  color: var(--accent-strong);
+/* The seven colours survive only at the tip: gold line, rainbow end. */
+.tail-rule {
+  height: 3px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--soot-gold) 0 84%, transparent 84%),
+    var(--rainbow) right / 16% 100% no-repeat;
+}
+
+.prayer {
+  font-family: var(--serif);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+}
+
+/* Today: always soot black with gold, like the emblem */
+.today {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 34px 22px 26px;
+  border-radius: var(--radius);
+  color: var(--on-soot);
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgb(240 119 58 / 22%), transparent 70%),
+    var(--soot);
+  border: 1px solid #3a2e22;
+  box-shadow: var(--shadow);
+}
+
+.today .eyebrow {
+  color: var(--soot-gold);
+  font-weight: 600;
+  letter-spacing: 0.4em;
   font-size: 0.85rem;
 }
 
 .today-date {
-  font-size: clamp(2.6rem, 11vw, 4.2rem);
-  font-weight: 800;
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 11vw, 4.4rem);
+  font-weight: 700;
   line-height: 1.15;
   margin-top: 6px;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
 }
 
+.today.is-festival .today-date {
+  color: #ffb27a;
+  text-shadow: 0 0 24px rgb(255 120 40 / 45%);
+}
+
 .today-year {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 600;
   margin-top: 4px;
+  color: var(--soot-gold);
 }
 
 .today-gregorian,
 .today-countdown {
-  color: var(--text-muted);
-}
-
-.today-gregorian {
-  margin-top: 2px;
+  color: var(--on-soot-muted);
 }
 
 .progress {
-  height: 6px;
+  height: 4px;
   max-width: 360px;
   margin: 18px auto 8px;
-  background: var(--surface-muted);
+  background: rgb(255 255 255 / 10%);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -183,12 +257,22 @@ main {
 .progress-bar {
   height: 100%;
   width: 0;
-  background: var(--accent);
+  background: linear-gradient(90deg, #c2410c, #f97316, #fcd34d);
   border-radius: inherit;
 }
 
 .today-countdown {
   font-size: 0.875rem;
+}
+
+.today .tail-rule {
+  max-width: 240px;
+  margin: 22px auto 14px;
+}
+
+.today .prayer {
+  color: var(--soot-gold);
+  font-size: 0.95rem;
 }
 
 /* Forms */
@@ -231,7 +315,7 @@ select {
   padding: 8px 12px;
   background: var(--surface-muted);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--text);
   font-size: 1rem;
 }
@@ -240,7 +324,7 @@ input:focus-visible,
 select:focus-visible,
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--gold) 60%, transparent);
   outline-offset: 2px;
 }
 
@@ -248,11 +332,15 @@ a:focus-visible {
   display: block;
   margin-top: 14px;
   padding: 12px 14px;
-  min-height: 3.3em;
-  border-radius: 12px;
-  background: var(--accent-soft);
+  border-radius: 10px;
+  background: var(--gold-soft);
+  border-left: 3px solid var(--gold);
   font-weight: 600;
   overflow-wrap: anywhere;
+}
+
+.result:empty {
+  display: none;
 }
 
 .result small {
@@ -262,15 +350,20 @@ a:focus-visible {
 }
 
 .result.error {
-  background: var(--festival-soft);
+  background: var(--flame-soft);
+  border-left-color: var(--danger);
   color: var(--danger);
+}
+
+.tool .result.ok {
+  color: var(--success);
 }
 
 .primary-button,
 .text-button,
 .icon-button {
   min-height: 44px;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
@@ -280,19 +373,32 @@ a:focus-visible {
 
 .primary-button {
   padding: 8px 18px;
-  border: none;
-  background: var(--accent);
-  color: #fff;
+  border: 1px solid #000;
+  background: var(--soot);
+  color: var(--soot-gold);
   font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .primary-button:hover {
-  background: var(--accent-strong);
+  background: var(--soot-raised);
 }
 
 .primary-button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+  .primary-button {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a130c;
+  }
+
+  .primary-button:hover {
+    background: var(--gold-strong);
+  }
 }
 
 .text-button,
@@ -308,6 +414,10 @@ a:focus-visible {
   padding: 0;
   font-size: 1.4rem;
   line-height: 1;
+}
+
+.icon-button:disabled {
+  opacity: 0.4;
 }
 
 /* Month view */
@@ -352,7 +462,7 @@ a:focus-visible {
 
 .month-grid li {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 6px 8px;
   min-height: 62px;
   background: var(--surface);
@@ -360,6 +470,7 @@ a:focus-visible {
 
 .month-grid .num {
   display: block;
+  font-family: var(--serif);
   font-size: 1.15rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -372,18 +483,33 @@ a:focus-visible {
   white-space: nowrap;
 }
 
+.month-grid .tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 4px;
+  color: var(--flame);
+}
+
 .month-grid .festival {
-  background: var(--festival-soft);
-  border-color: transparent;
+  background: var(--soot);
+  border-color: #3a2e22;
 }
 
 .month-grid .festival .num {
-  color: var(--festival);
+  color: #ffb27a;
+}
+
+.month-grid .festival .greg {
+  color: var(--on-soot-muted);
 }
 
 .month-grid .is-today {
-  border: 2px solid var(--accent);
-  background: var(--accent-soft);
+  border: 2px solid var(--gold);
+  background: var(--gold-soft);
+}
+
+.month-grid .festival.is-today {
+  background: var(--soot-raised);
 }
 
 @media (max-width: 480px) {
@@ -405,6 +531,30 @@ a:focus-visible {
   .month-grid .greg {
     font-size: 0.66rem;
   }
+
+  .month-grid .tag {
+    display: block;
+    margin: 0;
+  }
+}
+
+/* Rules */
+.rules {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.rules div {
+  display: grid;
+  grid-template-columns: 3.2em 1fr;
+  gap: 12px;
+}
+
+.rules dt {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--gold);
 }
 
 /* Widget preview */
@@ -419,7 +569,9 @@ a:focus-visible {
   border-radius: 28px;
   color: #fff;
   text-align: center;
-  background: linear-gradient(160deg, #3a2a52, #a2513a 60%, #e08a4a);
+  background:
+    radial-gradient(80% 60% at 50% 100%, rgb(240 119 58 / 55%), transparent 70%),
+    linear-gradient(170deg, #0c0a09, #2a1a12 60%, #4a2414);
 }
 
 .lock-inline {
@@ -444,7 +596,7 @@ a:focus-visible {
 .lock-circular,
 .lock-rectangular {
   height: 72px;
-  background: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 16%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -479,15 +631,35 @@ a:focus-visible {
   font-size: 1.3rem;
 }
 
-.steps,
-.rules {
+.steps {
   padding-left: 1.3em;
   margin: 0 0 14px;
 }
 
-.steps li,
-.rules li {
+.steps li {
   margin-bottom: 4px;
+}
+
+.url-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.url-row code {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface-muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.small-button {
+  min-height: 36px;
+  padding: 4px 12px;
+  font-size: 0.875rem;
 }
 
 .actions {
@@ -509,17 +681,136 @@ a:focus-visible {
   margin-bottom: 10px;
 }
 
-.tool .result.ok {
-  color: var(--success);
+/* Handbook */
+.handbook {
+  max-width: 720px;
+  margin-inline: auto;
+  width: 100%;
 }
 
+.handbook-hero {
+  text-align: center;
+  padding: 36px 22px 30px;
+  border-radius: var(--radius);
+  color: var(--on-soot);
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgb(240 119 58 / 20%), transparent 70%),
+    var(--soot);
+  border: 1px solid #3a2e22;
+}
+
+.handbook-hero img {
+  width: min(180px, 50vw);
+  height: auto;
+}
+
+.handbook-hero h1 {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  margin-top: 14px;
+  color: var(--soot-gold);
+}
+
+.handbook-hero .tail-rule {
+  max-width: 200px;
+  margin: 18px auto 0;
+}
+
+.handbook-body {
+  margin-top: 16px;
+}
+
+.handbook-body section + section {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.handbook-body h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+}
+
+.handbook-body h2::before {
+  content: "";
+  width: 14px;
+  height: 18px;
+  flex: none;
+  background: var(--flame);
+  clip-path: path("M7 0 C9 4 14 7 14 12 A7 6 0 0 1 0 12 C0 8 3 6 4 4 C5 7 6 8 7 8 C6 5 6 2 7 0 Z");
+}
+
+.handbook-body p + p {
+  margin-top: 0.8em;
+}
+
+.handbook-prayer {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 4.6vw, 1.5rem);
+  line-height: 1.9;
+  text-align: center;
+  letter-spacing: 0.12em;
+  padding: 10px 0;
+}
+
+.handbook-prayer span {
+  display: block;
+}
+
+.gesture {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.gesture div {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+}
+
+.gesture strong {
+  display: block;
+  font-family: var(--serif);
+  color: var(--gold);
+}
+
+.titles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.titles div {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+}
+
+.titles strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+}
+
+.titles span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Footer */
 .site-footer {
-  padding: 28px 0 max(28px, env(safe-area-inset-bottom));
+  padding: 30px 0 max(28px, env(safe-area-inset-bottom));
   color: var(--text-muted);
   font-size: 0.8rem;
   text-align: center;
 }
 
-.result:empty {
-  display: none;
+.site-footer .prayer {
+  font-size: 0.95rem;
+  color: var(--gold);
+  margin-bottom: 6px;
 }
